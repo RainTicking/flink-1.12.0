@@ -322,6 +322,8 @@ public class FlinkYarnSessionCli extends AbstractYarnCli {
 
 			effectiveConfiguration.setString(HA_CLUSTER_ID, zooKeeperNamespace);
 			effectiveConfiguration.setString(YarnConfigOptions.APPLICATION_ID, ConverterUtils.toString(applicationId));
+			// TARGET 就是 execution.target，目标执行器
+			// 决定后面什么类型的执行器提交任务：yarn-session、yarn-per-job
 			effectiveConfiguration.setString(DeploymentOptions.TARGET, YarnSessionClusterExecutor.NAME);
 		} else {
 			effectiveConfiguration.setString(DeploymentOptions.TARGET, YarnJobClusterExecutor.NAME);

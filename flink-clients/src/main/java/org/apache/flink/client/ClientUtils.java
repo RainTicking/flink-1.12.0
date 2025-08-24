@@ -92,6 +92,7 @@ public enum ClientUtils {
 		final ClassLoader userCodeClassLoader = program.getUserCodeClassLoader();
 		final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
+			// 设置当前的 classloader 为用户代码的 classloader
 			Thread.currentThread().setContextClassLoader(userCodeClassLoader);
 
 			LOG.info("Starting program (detached: {})", !configuration.getBoolean(DeploymentOptions.ATTACHED));

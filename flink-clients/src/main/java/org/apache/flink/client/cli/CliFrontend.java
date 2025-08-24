@@ -172,7 +172,9 @@ public class CliFrontend {
 	protected void runApplication(String[] args) throws Exception {
 		LOG.info("Running 'run-application' command.");
 
+		// 获取默认的运行参数
 		final Options commandOptions = CliFrontendParser.getRunCommandOptions();
+		// 解析参数，返回 commandLine
 		final CommandLine commandLine = getCommandLine(commandOptions, args, true);
 
 		if (commandLine.hasOption(HELP_OPTION.getOpt())) {
@@ -1152,6 +1154,8 @@ public class CliFrontend {
 	public CustomCommandLine validateAndGetActiveCommandLine(CommandLine commandLine) {
 		LOG.debug("Custom commandlines: {}", customCommandLines);
 		for (CustomCommandLine cli : customCommandLines) {
+			// 在 FlinkYarnSessionCli 为 active 时优先返回 FlinkYarnSessionCli。
+			// 对于 DefaultCli，它的 isActive 方法总是返回 true。
 			LOG.debug("Checking custom commandline {}, isActive: {}", cli, cli.isActive(commandLine));
 			if (cli.isActive(commandLine)) {
 				return cli;
