@@ -148,6 +148,7 @@ public class DefaultDispatcherResourceManagerComponentFactory implements Dispatc
 					dispatcherGatewayRetriever,
 					executor);
 
+			// 创建 接收前端 Rest 请求 的节点
 			webMonitorEndpoint = restEndpointFactory.createRestEndpoint(
 				configuration,
 				dispatcherGatewayRetriever,
@@ -163,6 +164,10 @@ public class DefaultDispatcherResourceManagerComponentFactory implements Dispatc
 
 			final String hostname = RpcUtils.getHostname(rpcService);
 
+			// 创建 ResourceManager 对象，返回的是 new YarnResourceManager
+			// 调度过程：AbstractDispatcherResourceManagerComponentFactory
+			// -> ActiveResourceManagerFactory
+			// -> YarnResourceManagerFactory
 			/*TODO 创建 ResourceManager：Yarn模式的 ResourceManager*/
 			resourceManager = resourceManagerFactory.createResourceManager(
 				configuration,

@@ -453,6 +453,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			return deployInternal(
 				clusterSpecification,
 				"Flink per-job cluster",
+				// 获取 YarnJobClusterEntrypoint，启动 AM 的入口
 				getYarnJobClusterEntrypoint(),
 				jobGraph,
 				detached);
@@ -515,7 +516,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		// ------------------ Check if the YARN ClusterClient has the requested resources --------------
 		/*TODO 检查yarn是否有足够的资源*/
 
-		// Create application via yarnClient
+		// Create application via yarnClient 创建应用
 		final YarnClientApplication yarnApplication = yarnClient.createApplication();
 		final GetNewApplicationResponse appResponse = yarnApplication.getNewApplicationResponse();
 
@@ -697,6 +698,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 				configuration,
 				PluginUtils.createPluginManagerFromRootFolder(configuration));
 
+		// 初始化文件系统（HDFS）
 		final FileSystem fs = FileSystem.get(yarnConfiguration);
 
 		// hard coded check for the GoogleHDFS client because its not overriding the getScheme() method.
@@ -759,7 +761,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 			activateHighAvailabilitySupport(appContext);
 		} else {
-			// set number of application retries to 1 in the default case
+			// set number of application retries to 1 in the default case  不是高可用重试次数为 1
 			appContext.setMaxAppAttempts(
 					configuration.getInteger(
 							YarnConfigOptions.APPLICATION_ATTEMPTS.key(),
@@ -850,7 +852,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			classPathBuilder.append(classPath).append(File.pathSeparator);
 		}
 
-		// Setup jar for ApplicationMaster
+		// Setup jar for ApplicationMaster 上传和配置 ApplicationMaster 的 jar 包：flink-dist*.jar
 		final YarnLocalResourceDescriptor localResourceDescFlinkJar = fileUploader.uploadFlinkDist(flinkJarPath);
 		classPathBuilder.append(localResourceDescFlinkJar.getResourceKey()).append(File.pathSeparator);
 
@@ -868,6 +870,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 				final String jobGraphFilename = "job.graph";
 				configuration.setString(JOB_GRAPH_FILE_PATH, jobGraphFilename);
 
+				// 将 JobGraph 写入 tmp 文件并添加到本地资源，并上传到 HDFS
 				fileUploader.registerSingleLocalResource(
 					jobGraphFilename,
 					new Path(tmpJobGraphFile.toURI()),
@@ -894,6 +897,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			tmpConfigurationFile = File.createTempFile(appId + "-flink-conf.yaml", null);
 			BootstrapTools.writeConfiguration(configuration, tmpConfigurationFile);
 
+			// 上传 flink 配置文件
 			String flinkConfigKey = "flink-conf.yaml";
 			fileUploader.registerSingleLocalResource(
 				flinkConfigKey,
@@ -979,6 +983,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		final JobManagerProcessSpec processSpec = JobManagerProcessUtils.processSpecFromConfigWithNewOptionToInterpretLegacyHeap(
 			flinkConfiguration,
 			JobManagerOptions.TOTAL_PROCESS_MEMORY);
+		//封装启动 AM container 的 Java 命令
 		final ContainerLaunchContext amContainer = setupApplicationMasterContainer(
 				yarnClusterEntrypoint,
 				hasKrb5,
@@ -1509,7 +1514,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			javaOpts += " -Djava.security.krb5.conf=krb5.conf";
 		}
 
-		// Set up the container launch context for the application master
+		// Set up the container launch context for the application master  创建 AM 的容器启动上下文
 		ContainerLaunchContext amContainer = Records.newRecord(ContainerLaunchContext.class);
 
 		final  Map<String, String> startCommandValues = new HashMap<>();

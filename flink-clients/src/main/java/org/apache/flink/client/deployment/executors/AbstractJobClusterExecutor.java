@@ -69,6 +69,7 @@ public class AbstractJobClusterExecutor<ClusterID, ClientFactory extends Cluster
 			/*TODO 集群特有资源配置：JobManager内存、TaskManager内存、每个Tm的slot数*/
 			final ClusterSpecification clusterSpecification = clusterClientFactory.getClusterSpecification(configuration);
 
+			// 部署集群
 			final ClusterClientProvider<ClusterID> clusterClientProvider = clusterDescriptor
 					.deployJobCluster(clusterSpecification, jobGraph, configAccessor.getDetachedMode());
 			LOG.info("Job has been submitted with JobID " + jobGraph.getJobID());
