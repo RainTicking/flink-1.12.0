@@ -816,13 +816,14 @@ public class JobMaster extends FencedRpcEndpoint<JobMasterId> implements JobMast
 
 		//TODO: Remove once the ZooKeeperLeaderRetrieval returns the stored address upon start
 		// try to reconnect to previously known leader
+		// 连接到之前已知的 ResourceManager
 		reconnectToResourceManager(new FlinkException("Starting JobMaster component."));
 
 		// job is ready to go, try to establish connection with resource manager
 		//   - activate leader retrieval for the resource manager
 		//   - on notification of the leader, the connection will be established and
 		//     the slot pool will start requesting slots
-		/*TODO 与ResourceManager建立连接，slotpool开始请求资源*/
+		/*TODO 与ResourceManager建立连接，slot pool开始向 slot manager 请求 slot*/
 		resourceManagerLeaderRetriever.start(new ResourceManagerLeaderListener());
 	}
 

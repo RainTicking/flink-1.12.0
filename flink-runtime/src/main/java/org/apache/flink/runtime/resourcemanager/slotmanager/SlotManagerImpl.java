@@ -1269,9 +1269,11 @@ public class SlotManagerImpl implements SlotManager {
 			int slotsDiff = redundantTaskManagerNum * numSlotsPerWorker - freeSlots.size();
 			if (freeSlots.size() == slots.size()) {
 				// No need to keep redundant taskManagers if no job is running.
+				// 如果没有 job 在运行，释放 taskmanager
 				releaseTaskExecutors(timedOutTaskManagers, timedOutTaskManagers.size());
 			} else if (slotsDiff > 0) {
 				// Keep enough redundant taskManagers from time to time.
+				// 保证随时有足够的 taskmanager
 				int requiredTaskManagers = MathUtils.divideRoundUp(slotsDiff, numSlotsPerWorker);
 				allocateRedundantTaskManagers(requiredTaskManagers);
 			} else {

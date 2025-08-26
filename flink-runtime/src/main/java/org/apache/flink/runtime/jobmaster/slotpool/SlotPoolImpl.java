@@ -283,6 +283,7 @@ public class SlotPoolImpl implements SlotPool {
 
 		// work on all slots waiting for this connection
 		for (PendingRequest pendingRequest : waitingForResourceManager.values()) {
+			// 向 ResourceManager 申请 slot
 			requestSlotFromResourceManager(resourceManagerGateway, pendingRequest);
 		}
 
