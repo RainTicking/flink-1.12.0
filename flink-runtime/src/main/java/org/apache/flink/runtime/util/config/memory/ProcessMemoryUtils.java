@@ -73,6 +73,7 @@ public class ProcessMemoryUtils<FM extends FlinkMemory> {
 			/*TODO 如果配置文件，配置的是 flink内存 的方式*/
 			// internal memory options are not configured, total Flink memory is configured,
 			// derive from total flink memory
+			// 如果只配置了JM的Flink总内存，调用下面方法
 			return deriveProcessSpecWithTotalFlinkMemory(config);
 		} else if (config.contains(options.getTotalProcessMemoryOption())) {
 			/*TODO 如果配置文件，配置的是 进程内存 的方式*/
@@ -93,7 +94,9 @@ public class ProcessMemoryUtils<FM extends FlinkMemory> {
 
 	private CommonProcessMemorySpec<FM> deriveProcessSpecWithTotalFlinkMemory(Configuration config) {
 		MemorySize totalFlinkMemorySize = getMemorySizeFromConfig(config, options.getTotalFlinkMemoryOption());
+		// 获取JM的Flink总内存
 		FM flinkInternalMemory = flinkMemoryUtils.deriveFromTotalFlinkMemory(config, totalFlinkMemorySize);
+		// 获取JM的JVM元空间和执行开销
 		JvmMetaspaceAndOverhead jvmMetaspaceAndOverhead = deriveJvmMetaspaceAndOverheadFromTotalFlinkMemory(config, totalFlinkMemorySize);
 		return new CommonProcessMemorySpec<>(flinkInternalMemory, jvmMetaspaceAndOverhead);
 	}
